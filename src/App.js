@@ -1,26 +1,45 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { getNewsAndComments } from "./services/HackerAPI.service";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            NEWS_ID: 23809291,
+        };
+    }
+
+    componentDidMount() {
+        this.setState({
+            started: new Date().toLocaleTimeString()
+        })
+        getNewsAndComments(this.state.NEWS_ID)
+            .then(data => {
+                this.setState({
+                    NEWS: data
+                })
+            })
+            .then(() => {
+                this.setState({
+                    done: new Date().toLocaleTimeString()
+                })
+            });
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <p>Fetching news and comments for: <b>{this.state.NEWS_ID}</b></p>
+                <p>Started: {this.state.started}</p>
+                <p>Ended: {this.state.done}</p>
+                <pre>
+                    {JSON.stringify(this.state.NEWS, null, 2)}
+                </pre>
+            </div>
+        );
+    }
 }
 
 export default App;
