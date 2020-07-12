@@ -1,12 +1,18 @@
+const LEVELS_TO_LOAD = 1;
 
-export async function getNewsAndComments(newsID) {
+export async function getNewsAndComments(newsID, level = 0) {
+
     const news = await mapToJson(newsID);
     news.comments = [];
 
     if ('kids' in news) {
-        for (const id of news.kids) {
-            const child = await getNewsAndComments(id);
-            news.comments.push(child);
+        level += 1;
+        if (level <= LEVELS_TO_LOAD) {
+            for (const id of news.kids) {
+                news.comments.push(
+                    await getNewsAndComments(id, level)
+                );
+            }
         }
     }
 
